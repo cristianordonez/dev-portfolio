@@ -20,9 +20,9 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                node-version: "20"
-                cache: ${{ steps.detect-package-manager.outputs.manager }}
-            
+                  node-version: "20"
+                  cache: ${{ steps.detect-package-manager.outputs.manager }}
+
             - name: Setup Pages
               uses: actions/configure-pages@v5
 
@@ -36,19 +36,20 @@ jobs:
               run: ${{ steps.detect-package-manager.outputs.runner }} vite build
 
             - name: Upload artifact
-              uses: actions/upload-pages-artifact@v4
+              uses: actions/upload-pages-artifact@v3
               with:
-                path: ./out
-
+                  path: ./out
+                  name: ${{ inputs.name }}
+                  retention-days: ${{ inputs.retention-days }}
 
     deploy:
-    # Add a dependency to the build job
+        # Add a dependency to the build job
         needs: build
 
         # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
         permissions:
-            pages: write      # to deploy to Pages
-            id-token: write   # to verify the deployment originates from an appropriate source
+            pages: write # to deploy to Pages
+            id-token: write # to verify the deployment originates from an appropriate source
 
         # Deploy to the github-pages environment
         environment:
@@ -62,4 +63,4 @@ jobs:
               id: deployment
               uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
               with:
-                token: ${{ github.token }}
+                  token: ${{ github.token }}
