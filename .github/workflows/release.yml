@@ -12,6 +12,8 @@ jobs:
     # this will build the artifacts needed for deploy using the npm run build command
     build:
         runs-on: ubuntu-latest
+        outputs:
+            release_version: ${{ steps.build.outputs.RELEASE_VERSION }}
 
         steps:
             - name: "Checkout"
@@ -39,9 +41,28 @@ jobs:
                   path: ./dist
                   retention-days: 90
 
+            - name: Get version from package.json
+              run: |
+                  release_version=$(npm v ./ version)
+                  echo "RELEASE_VERSION=$release_version" >> $GITHUB_OUTPUT
+
+    cleanup:
+        runs-on: ubuntu-latest
+        permissions: write-all
+
+        steps:
+            - name: Delete inactive deployments
+              uses: strumwolf/delete-deployment-environment@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  environment: github-pages
+                  onlyRemoveDeployments: true
+
     deploy:
         # Add a dependency to the build job
-        needs: build
+        needs:
+            - build
+            - cleanup
         # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
         permissions:
             pages: write # to deploy to Pages
@@ -52,6 +73,12 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
+            - name: Print all environment variables
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  tag: ${{ needs.build.outputs.RELEASE_VERSION }}
+              run: printenv
+
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4
@@ -61,9 +88,9 @@ jobs:
             - name: Create release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  tag: ${{ github.ref_name }}
+                  tag: ${{ needs.build.outputs.RELEASE_VERSION }}
               run: |
-                  gh release create "$tag" \
+                  gh release create $tag \
                       --repo="$GITHUB_REPOSITORY" \
-                      --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+                      --title=$tag\
                       --generate-notes
