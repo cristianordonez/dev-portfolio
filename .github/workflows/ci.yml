@@ -1,0 +1,14 @@
+name: Continuous Integration
+
+# This workflow will run on main branch to build, test and deploy frontend application.
+# SCM release tag will be created on repository as well.
+on: {}
+
+jobs:
+    # this will build the artifacts needed for deploy using the npm run build command
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v4
