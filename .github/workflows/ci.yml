@@ -1,6 +1,5 @@
 name: Continuous Integration
 
-# This workflow will run on main branch to build, test and deploy frontend application.
 # SCM release tag will be created on repository as well.
 on: {}
 

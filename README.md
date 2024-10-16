@@ -53,3 +53,13 @@ export default tseslint.config({
 
 Configure .husky/pre-commit to set up all commands that run before commits.
 Add commands to run to lint-staged section of package.json.
+
+## Release
+
+-   Use vite preview command to test deployments
+
+```bash
+npm run preview
+```
+
+-   Make PR to main branch
