@@ -5,7 +5,7 @@ on: {}
 
 jobs:
     # this will build the artifacts needed for deploy using the npm run build command
-    build:
+    Inspect:
         runs-on: ubuntu-latest
 
         steps:

@@ -13,7 +13,7 @@ jobs:
     build:
         runs-on: ubuntu-latest
         outputs:
-            release_version: ${{ steps.build.outputs.RELEASE_VERSION }}
+            RELEASE_VERSION: ${{ steps.build.outputs.RELEASE_VERSION }}
 
         steps:
             - name: "Checkout"
@@ -43,8 +43,8 @@ jobs:
 
             - name: Get version from package.json
               run: |
-                  release_version=$(npm v ./ version)
-                  echo "RELEASE_VERSION=$release_version" >> $GITHUB_OUTPUT
+                  RELEASE_VERSION=$(npm v ./ version)
+                  echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_OUTPUT
 
     cleanup:
         runs-on: ubuntu-latest
