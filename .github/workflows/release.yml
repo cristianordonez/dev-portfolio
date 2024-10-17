@@ -13,10 +13,10 @@ jobs:
     build:
         runs-on: ubuntu-latest
         outputs:
-            RELEASE_VERSION: ${{ steps.build.outputs.RELEASE_VERSION }}
+            release_version: ${{ steps.version.outputs.release_version }}
 
         steps:
-            - name: "Checkout"
+            - name: Checkout Repository
               uses: actions/checkout@v4
 
             - name: Setup Node
@@ -36,15 +36,16 @@ jobs:
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
-              id: deployment
+              id: publish
               with:
                   path: ./dist
                   retention-days: 90
 
             - name: Get version from package.json
+              id: version
               run: |
                   RELEASE_VERSION=$(npm v ./ version)
-                  echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_OUTPUT
+                  echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
 
     cleanup:
         runs-on: ubuntu-latest
@@ -59,7 +60,6 @@ jobs:
                   onlyRemoveDeployments: true
 
     deploy:
-        # Add a dependency to the build job
         needs:
             - build
             - cleanup
@@ -73,24 +73,18 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
-            - name: Print all environment variables
+            - name: Create release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  tag: ${{ needs.build.outputs.RELEASE_VERSION }}
-              run: printenv
+                  tag: v${{ needs.build.outputs.release_version }}
+              run: |
+                  gh release create $tag \
+                      --repo="$GITHUB_REPOSITORY" \
+                      --title=$tag\
+                      --generate-notes
 
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4
               with:
                   token: ${{ github.token }}
-
-            - name: Create release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  tag: ${{ needs.build.outputs.RELEASE_VERSION }}
-              run: |
-                  gh release create $tag \
-                      --repo="$GITHUB_REPOSITORY" \
-                      --title=$tag\
-                      --generate-notes

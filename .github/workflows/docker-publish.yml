@@ -6,21 +6,17 @@ name: Docker
 # documentation.
 
 on:
-    push:
-        branches:
-            - main
-            - release*
-            - develop
-        # Publish semver tags as releases.
-        tags: ["v*.*.*"]
-    pull_request:
-        branches:
-            - main
+    release
+    # Publish semver tags as releases.
+    #     tags:
+    #         - "*"
+    # pull_request:
+    #     branches:
+    #         - main
 
 env:
     # Use docker.io for Docker Hub if empty
     REGISTRY: ghcr.io
-    # github.repository as <account>/<repo>
     IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -34,6 +30,9 @@ jobs:
             id-token: write
 
         steps:
+            - name: print
+              run: printenv
+
             - name: Checkout repository
               uses: actions/checkout@v4
 

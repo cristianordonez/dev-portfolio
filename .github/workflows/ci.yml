@@ -1,7 +1,7 @@
 name: Continuous Integration
 
 # This workflow will run on every commit to check code quality and vulnerabilities.
-on: {}
+on: push
 
 jobs:
     # this will build the artifacts needed for deploy using the npm run build command
