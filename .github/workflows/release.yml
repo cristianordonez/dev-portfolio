@@ -14,6 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         permissions:
             contents: write
+            id-token: write # to verify the deployment originates from an appropriate source
         # outputs:
         #     release_version: ${{ steps.version.outputs.release_version }}
 
@@ -63,7 +64,16 @@ jobs:
                       --repo="$GITHUB_REPOSITORY" \
                       --title=$RELEASE_VERSION\
                       --generate-notes
-                  gh workflow run docker-publish.yml --ref $RELEASE_VERSION
+
+            - name: trigger docker
+              # gh workflow run docker-publish.yml --ref $RELEASE_VERSION
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  gh workflow run docker-publish.yml --field tag="$RELEASE_VERSION"
+              # uses: ./.github/workflows/docker-publish.yml
+              # with:
+              #     tag: ${{ env.RELEASE_VERSION }}
 
     cleanup:
         runs-on: ubuntu-latest
@@ -85,7 +95,6 @@ jobs:
         permissions:
             pages: write # to deploy to Pages
             id-token: write # to verify the deployment originates from an appropriate source
-            contents: write
         environment:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}
