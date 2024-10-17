@@ -101,7 +101,6 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
-            # - name: Create release
             #   env:
             #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             #       tag: v${{ needs.build.outputs.release_version }}
