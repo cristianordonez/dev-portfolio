@@ -57,22 +57,20 @@ jobs:
                   tag: "$RELEASE_VERSION"
               run: printenv
 
-            - name: Create release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  gh release create $RELEASE_VERSION \
-                      --repo="$GITHUB_REPOSITORY" \
-                      --title=$RELEASE_VERSION\
-                      --generate-notes
-
+            # - name: Create release
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   run: |
+            #       gh release create $RELEASE_VERSION \
+            #           --repo="$GITHUB_REPOSITORY" \
+            #           --title=$RELEASE_VERSION\
+            #           --generate-notes
             - name: trigger docker
               # gh workflow run docker-publish.yml --ref $RELEASE_VERSION
               env:
                   GH_TOKEN: ${{ github.token }}
               run: |
                   gh workflow run docker-publish.yml --field tag="$RELEASE_VERSION"
-              # uses: ./.github/workflows/docker-publish.yml
               # with:
               #     tag: ${{ env.RELEASE_VERSION }}
 
