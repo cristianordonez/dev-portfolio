@@ -1,7 +1,7 @@
 name: Continuous Integration
 
-# This workflow will run on every commit to check code quality and scan for vulnerabilities.
-on: push
+# This workflow will run on every pushed commit and pull requests to check code quality and scan for vulnerabilities.
+on: [push, pull_request]
 
 jobs:
     # this will build the artifacts needed for deploy using the npm run build command
@@ -25,3 +25,13 @@ jobs:
 
             - name: Run Formatter
               run: npm run format
+
+    Scan:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v4
+
+            - name: TruffleHog Enterprise scan
+              uses: trufflesecurity/TruffleHog-Enterprise-Github-Action@main
