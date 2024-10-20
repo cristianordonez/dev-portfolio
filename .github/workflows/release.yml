@@ -1,23 +1,16 @@
 name: Release
 
 # This workflow will run on main branch to build, test and deploy frontend application.
-# SCM release tag will be created on repository as well.
+# SCM release tag will also be created on repository.
 on:
     push:
         branches:
             - main
-            - develop
 
 jobs:
-    # this will build the artifacts needed for deploy using the npm run build command
     build:
         runs-on: ubuntu-latest
-        permissions:
-            write-all
-            # contents: write
-            # id-token: write # to verify the deployment originates from an appropriate source
-        # outputs:
-        #     release_version: ${{ steps.version.outputs.release_version }}
+        permissions: write-all
 
         steps:
             - name: Checkout Repository
@@ -43,7 +36,7 @@ jobs:
               id: publish
               with:
                   path: ./dist
-                  retention-days: 90
+                  retention-days: 30
 
             - name: Get version from package.json
               id: version
@@ -51,28 +44,11 @@ jobs:
                   RELEASE_VERSION=$(npm v ./ version)
                   echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
 
-            - name: PRINT
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  tag: "$RELEASE_VERSION"
-              run: printenv
-
-            # - name: Create release
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #   run: |
-            #       gh release create $RELEASE_VERSION \
-            #           --repo="$GITHUB_REPOSITORY" \
-            #           --title=$RELEASE_VERSION\
-            #           --generate-notes
             - name: trigger docker
-              # gh workflow run docker-publish.yml --ref $RELEASE_VERSION
               env:
                   GH_TOKEN: ${{ github.token }}
               run: |
                   gh workflow run docker-publish.yml --field tag="$RELEASE_VERSION"
-              # with:
-              #     tag: ${{ env.RELEASE_VERSION }}
 
     cleanup:
         runs-on: ubuntu-latest
@@ -90,7 +66,6 @@ jobs:
         needs:
             - build
             - cleanup
-        # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
         permissions:
             pages: write # to deploy to Pages
             id-token: write # to verify the deployment originates from an appropriate source
@@ -99,16 +74,6 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #       tag: v${{ needs.build.outputs.release_version }}
-            #   run: |
-            #       gh release create $tag \
-            #           --repo="$GITHUB_REPOSITORY" \
-            #           --title=$tag\
-            #           --generate-notes
-            #       gh workflow run docker-publish.yml --ref $tag
-
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4

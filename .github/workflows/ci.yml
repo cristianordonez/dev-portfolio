@@ -1,6 +1,6 @@
 name: Continuous Integration
 
-# This workflow will run on every commit to check code quality and vulnerabilities.
+# This workflow will run on every commit to check code quality and scan for vulnerabilities.
 on: push
 
 jobs:

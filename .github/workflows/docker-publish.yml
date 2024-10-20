@@ -11,12 +11,6 @@ on:
             tag:
                 required: true
                 type: string
-    # Publish semver tags as releases.
-    #     tags:
-    #         - "*"
-    # pull_request:
-    #     branches:
-    #         - main
 
 env:
     # Use docker.io for Docker Hub if empty
