@@ -48,7 +48,7 @@ jobs:
               env:
                   GH_TOKEN: ${{ github.token }}
               run: |
-                  gh workflow run docker-publish.yml --field tag="$RELEASE_VERSION"
+                  gh workflow run docker_publish.yml --field tag="$RELEASE_VERSION"
 
     cleanup:
         runs-on: ubuntu-latest
