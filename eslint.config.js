@@ -4,6 +4,8 @@ import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import _import from 'eslint-plugin-import'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -20,29 +22,22 @@ export default [
     {
         ignores: ['**/dist/', '**/node_modules/']
     },
-    ...fixupConfigRules(
-        compat.extends(
-            'airbnb-typescript/base',
-            'plugin:prettier/recommended',
-            'plugin:react-hooks/recommended',
-            'plugin:react-refresh/recommended'
-        )
-    ),
+    ...fixupConfigRules(compat.extends('plugin:prettier/recommended')),
     {
         plugins: {
             import: fixupPluginRules(_import),
-            '@typescript-eslint': typescriptEslint
+            '@typescript-eslint': typescriptEslint,
+            'react-hooks': reactHooks,
+            'react-refresh': reactRefresh
         },
 
         languageOptions: {
             globals: {
                 ...globals.jest
             },
-
             parser: tsParser,
             ecmaVersion: 5,
             sourceType: 'script',
-
             parserOptions: {
                 project: ['./tsconfig.json']
             }
